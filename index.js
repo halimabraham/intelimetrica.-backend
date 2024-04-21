@@ -4,6 +4,7 @@ const mysql = require('mysql2/promise');
 const dbConfig = require('./db.config');
 const bodyParser = require('body-parser');
 require('dotenv').config();
+const cors = require('cors'); // Importa el paquete cors
 
 const app = express();
 const PORT = process.env.APPPORT;
@@ -12,10 +13,13 @@ const PORT = process.env.APPPORT;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Usa our routes file
+// Agrega CORS a todas las solicitudes
+app.use(cors());
+
+// Usa nuestro archivo de rutas
 app.use('/', routes);
 
-// Initial DB connection
+// Función para conectarse a la base de datos
 async function connectToDatabase() {
     try {
         const connection = await mysql.createConnection({
@@ -26,7 +30,7 @@ async function connectToDatabase() {
             port: dbConfig.PORT,
         });
 
-        console.log('Established connection with MYSQL DB');
+        console.log('Conexión establecida con la base de datos MYSQL');
         return connection;
     } catch (error) {
         console.error(error);
@@ -34,10 +38,10 @@ async function connectToDatabase() {
     }
 }
 
-// Execute DB connection function
+// Ejecuta la función de conexión a la base de datos
 connectToDatabase();
 
-// Start server
+// Inicia el servidor
 app.listen(PORT, () => {
-    console.log(`Express server running on port: ${PORT}`);
+    console.log(`Servidor Express en ejecución en el puerto: ${PORT}`);
 });
