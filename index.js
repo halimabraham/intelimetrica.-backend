@@ -8,14 +8,14 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.APPPORT;
 
-// Parsear solicitudes con body-parser
+// Parse requests with body parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Usa las rutas en tu aplicación
+// Usa our routes file
 app.use('/', routes);
 
-// Conexión a la base de datos
+// Initial DB connection
 async function connectToDatabase() {
     try {
         const connection = await mysql.createConnection({
@@ -26,18 +26,18 @@ async function connectToDatabase() {
             port: dbConfig.PORT,
         });
 
-        console.log('Conexión establecida con la base de datos MySQL');
+        console.log('Established connection with MYSQL DB');
         return connection;
     } catch (error) {
-        console.error('Error al conectar con la base de datos MySQL:', error);
+        console.error(error);
         throw error;
     }
 }
 
-// Ejecuta la función para conectar a la base de datos
+// Execute DB connection function
 connectToDatabase();
 
-// Iniciar el servidor
+// Start server
 app.listen(PORT, () => {
-    console.log(`Servidor Express en ejecución en el puerto ${PORT}`);
+    console.log(`Express server running on port: ${PORT}`);
 });

@@ -1,6 +1,6 @@
 const restaurantModel = require('../models/restaurant.model');
 
-// Controlador para crear un restaurante
+// Create a new restaurant
 async function createRestaurant(req, res) {
     const body = req.body;
     const newRestaurant = {
@@ -20,23 +20,23 @@ async function createRestaurant(req, res) {
         await restaurantModel.createRestaurant(newRestaurant);
         res.status(200).send('Succesfully created restaurant');
     } catch (error) {
-        console.error('Error al crear restaurante:', error);
-        res.status(500).json({ error: 'Error al crear restaurante' });
+        console.error(error);
+        res.status(500).json({ error: 'Error creating restaurant' });
     }
 }
 
-// Controlador para obtener todos los restaurantes
+// Obtaining a restaurant
 async function getAllRestaurants(req, res) {
     try {
         const restaurants = await restaurantModel.getAllRestaurants();
         res.send(restaurants);
     } catch (error) {
-        console.error('Error al obtener todos los restaurantes:', error);
-        res.status(500).json({ error: 'Error al obtener todos los restaurantes' });
+        console.error(error);
+        res.status(500).json({ error: 'Error obtaing restaurants' });
     }
 }
 
-// Controlador para actualizar un restaurante
+// Updating a restaurant
 async function updateRestaurant(req, res) {
     console.log('entra')
     const id = req.params.id;
@@ -58,12 +58,12 @@ async function updateRestaurant(req, res) {
         await restaurantModel.updateRestaurant(id, updatedRestaurant);
         res.status(200).send('Succesfully updated restaurant');
     } catch (error) {
-        console.error('Error al actualizar restaurante:', error);
-        res.status(500).json({ error: 'Error al actualizar restaurante' });
+        console.error(error);
+        res.status(500).json({ error: 'Error updating restaurant' });
     }
 }
 
-// Función para eliminar un restaurante existente
+// Delete an existing restaurant
 async function deleteRestaurant(req, res) {
     const id = req.params.id;
     try {
@@ -71,11 +71,11 @@ async function deleteRestaurant(req, res) {
         res.status(200).send('Succesfully eliminated restaurant');
     } catch (error) {
         console.log(error)
-        res.status(500).json({ error: 'Error al eliminar restaurante' });
+        res.status(500).json({ error: 'Error deleting restaurant' });
     }
 }
 
-// Controlador para obtener un restaurante por su ID
+// Get restaurant info based on it's location
 async function getRestaurantLocationInfo(req, res) {
     const { latitude, longitude, radius } = req.query;
     try {

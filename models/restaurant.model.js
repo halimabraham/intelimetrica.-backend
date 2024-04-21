@@ -114,6 +114,7 @@ async function deleteRestaurant(id) {
     }
 }
 
+// Get restaurant info based on it's location
 async function getRestaurantLocationInfo(latitude, longitude, radius) {
     try {
         const connection = await mysql.createConnection({
