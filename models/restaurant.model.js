@@ -1,7 +1,7 @@
 const mysql = require('mysql2/promise');
 const dbConfig = require('../db.config');
 
-// Función para crear un nuevo restaurante
+// Create a new restaurant
 async function createRestaurant(newRestaurant) {
     try {
         const connection = await mysql.createConnection({
@@ -30,14 +30,14 @@ async function createRestaurant(newRestaurant) {
         ];
         const [result] = await connection.query(query, values);
         connection.end();
-        return result.insertId; // Devuelve el ID del nuevo restaurante creado
+        return result.insertId;
     } catch (error) {
-        console.error('Error al crear un nuevo restaurante:', error);
+        console.error('Error creating a new restaurant:', error);
         throw error;
     }
 }
 
-// Función para obtener todos los restaurantes
+// Get all restaurants
 async function getAllRestaurants() {
     try {
         const connection = await mysql.createConnection({
@@ -48,15 +48,15 @@ async function getAllRestaurants() {
             port: dbConfig.PORT,
         });
         const [rows, fields] = await connection.query('SELECT * FROM restaurantes');
-        connection.end(); // Cerrar la conexión después de usarla
+        connection.end();
         return rows;
     } catch (error) {
-        console.error('Error al obtener todos los restaurantes:', error);
+        console.error('Error obtaining all restaurants:', error);
         throw error;
     }
 }
 
-// Función para actualizar un restaurante existente
+// Update a restaurant
 async function updateRestaurant(id, updatedRestaurant) {
     try {
         const connection = await mysql.createConnection({
@@ -87,14 +87,14 @@ async function updateRestaurant(id, updatedRestaurant) {
         ];
         const [result] = await connection.query(query, values);
         connection.end();
-        return result.affectedRows > 0; // Devuelve true si se actualizó el restaurante
+        return result.affectedRows > 0;
     } catch (error) {
-        console.error('Error al actualizar el restaurante:', error);
+        console.error('Error updating restaurant:', error);
         throw error;
     }
 }
 
-// Función para eliminar un restaurante existente
+// Delete an existing restaurant
 async function deleteRestaurant(id) {
     try {
         const connection = await mysql.createConnection({
@@ -107,29 +107,49 @@ async function deleteRestaurant(id) {
         const query = 'DELETE FROM restaurantes WHERE id = ?';
         const [result] = await connection.query(query, [id]);
         connection.end();
-        return result.affectedRows > 0; // Devuelve true si se eliminó el restaurante
+        return result.affectedRows > 0;
     } catch (error) {
-        console.error('Error al eliminar el restaurante:', error);
+        console.error('Error deleting restaurant:', error);
         throw error;
     }
 }
 
-// Función para obtener un restaurante por su ID
-async function getRestaurantById(id) {
+async function getRestaurantLocationInfo(latitude, longitude, radius) {
     try {
-        const connection = await mysql.createConnection(dbConfig);
-        const [rows, fields] = await connection.query('SELECT * FROM restaurantes WHERE id = ?', [id]);
+        const connection = await mysql.createConnection({
+            host: dbConfig.HOST,
+            user: dbConfig.USER,
+            password: dbConfig.PASSWORD,
+            database: dbConfig.DB,
+            port: dbConfig.PORT,
+        });
+
+        const query = `
+            SELECT
+                COUNT(*) AS count,
+                AVG(rating) AS avg,
+                STDDEV(rating) AS std
+            FROM
+                restaurantes
+            WHERE
+                ST_Within(
+                    POINT(lat, lng),
+                    ST_Buffer(
+                        POINT(? , ?),
+                        ?
+                    )
+                );
+        `;
+
+
+        const [result] = await connection.query(query, [latitude, longitude, radius]);
         connection.end();
-        if (rows.length === 0) {
-            return null; // Si no se encuentra el restaurante, devolver null
-        }
-        return rows[0]; // Devolver el primer restaurante encontrado
+        
+        return result[0];
     } catch (error) {
-        console.error('Error al obtener el restaurante por ID:', error);
+        console.error('Error retrieving restaurant location info:', error);
         throw error;
     }
 }
 
-// Otros métodos para crear, actualizar y eliminar restaurantes según sea necesario
-
-module.exports = { getAllRestaurants, createRestaurant,  updateRestaurant, deleteRestaurant, getRestaurantById };
+module.exports = { getAllRestaurants, createRestaurant,  updateRestaurant, deleteRestaurant, getRestaurantLocationInfo };

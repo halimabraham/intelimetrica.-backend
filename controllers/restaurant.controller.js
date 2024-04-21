@@ -76,17 +76,17 @@ async function deleteRestaurant(req, res) {
 }
 
 // Controlador para obtener un restaurante por su ID
-async function getRestaurantById(req, res) {
-    const { id } = req.params;
+async function getRestaurantLocationInfo(req, res) {
+    const { latitude, longitude, radius } = req.query;
     try {
-        const restaurant = await restaurantModel.getRestaurantById(id);
-        res.json(restaurant);
+        const restaurantLocationInfo = await restaurantModel.getRestaurantLocationInfo(latitude, longitude, radius);
+        res.json(restaurantLocationInfo);
     } catch (error) {
-        console.error('Error al obtener el restaurante:', error);
-        res.status(500).json({ error: 'Error al obtener el restaurante' });
+        console.error(error);
+        res.status(500).json({ error: 'Error obtaining restaurant info' });
     }
 }
 
 // Otros controladores para crear, actualizar y eliminar restaurantes
 
-module.exports = { getAllRestaurants, createRestaurant, updateRestaurant, deleteRestaurant, getRestaurantById };
+module.exports = { getAllRestaurants, createRestaurant, updateRestaurant, deleteRestaurant, getRestaurantLocationInfo };
