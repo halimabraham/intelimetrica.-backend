@@ -87,6 +87,4 @@ async function getRestaurantLocationInfo(req, res) {
     }
 }
 
-// Otros controladores para crear, actualizar y eliminar restaurantes
-
 module.exports = { getAllRestaurants, createRestaurant, updateRestaurant, deleteRestaurant, getRestaurantLocationInfo };
